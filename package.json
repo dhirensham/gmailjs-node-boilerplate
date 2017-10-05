@@ -1,5 +1,5 @@
 {
-  "name": "gmailjs-node-boilerplate",
+  "name": "h3-securemail-gmail",
   "version": "1.0.0",
   "description": "",
   "main": "",
@@ -9,7 +9,7 @@
     "bundle": "browserify -o dist/extension.js src/extension.js",
     "build": "npm run stage && npm run bundle"
   },
-  "author": "Jostein kjønigsen",
+  "author": "H3 Digital",
   "license": "ISC",
   "dependencies": {
     "gmail-js": "^0.6.8",

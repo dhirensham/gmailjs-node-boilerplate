@@ -1,17 +1,42 @@
 {
     "manifest_version": 2,
-    "name": "GmailJS Node Boilerplate Extension",
-    "short_name": "gmailjsnode",
+    "name": "H3 Digital SecureMail POC Gmail Extension",
+    "short_name": "h3gmail",
     "version": "1.0",
-    "author": "Jostein Kjønigsen <jostein@kjonigsen.net>",
+    "author": "H3 Digital <info@h3digital.co.za>",
 
-    "description": "A minimal extension which demonstrates how to create a extension with Gmail.JS and NodeJS-based bundling.",
+    "description": "An extension to provide secure mail features to Gmail",
+
+    "background": {
+        "scripts": ["src/background.js"]
+    },
 
     "content_scripts": [
         {
             "matches": [ "*://mail.google.com/*" ],
             "js": [
                 "src/extensionInjector.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [ "*://localhost/*" ],
+            "js": [
+                "src/initializer.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [ "*://www.test3media.co.za/*" ],
+            "js": [
+                "src/initializer.js"
+            ],
+            "run_at": "document_end"
+        },
+        {
+            "matches": [ "*://test3media.co.za/*" ],
+            "js": [
+                "src/initializer.js"
             ],
             "run_at": "document_end"
         }
@@ -21,7 +46,13 @@
         "dist/extension.js"
     ],
 
+    "externally_connectable": {
+        "matches": ["*://mail.google.com/*", "*://localhost/*", "http://localhost:14735/*", "*://test3media.co.za/*", "*://www.test3media.co.za/*"]
+    },
+
     "permissions": [
-        "https://*/*"
+        "https://*/*",
+        "http://*/*",
+        "storage"
     ]
 }
