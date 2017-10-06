@@ -69,13 +69,16 @@ function addScript(src) {
     createCSSSelector('.hidden', 'display:none !important;');
     createCSSSelector('.h3smgreen', 'background-color:green !important;');
     createCSSSelector('.h3smgreen .ash.T-I', ' margin:0px !important;');
-
-    createCSSSelector('.h3smvalidated', 'background-color:rgb(0,250,0) !important;');
-    createCSSSelector('.h3smpreviouslyvalidated', 'background-color:rgb(0,0,250) !important;');
-    createCSSSelector('.h3smerror', 'background-color:rgb(250,0,0) !important;');
+    
+    createCSSSelector('.h3smvalidated', 'background-color:#7FFF8E !important;');
+    createCSSSelector('.h3smpreviouslyvalidated', 'background-color:#00C2FF !important;');
+    createCSSSelector('.h3smfail', 'background-color:#FF7F7F !important;');
+    createCSSSelector('.h3smerror', 'background-color:#FFE97F !important;');
     
     createCSSSelector('.h3smred', 'background-color:red !important;');
     createCSSSelector('.h3smred .ash.T-I', ' margin:0px !important;');
+
+    createCSSSelector('.widepopup', 'width: 60% !important; left:20% !important;');
     
     const script = document.createElement("script");
     script.type = "text/javascript";

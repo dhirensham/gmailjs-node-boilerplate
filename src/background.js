@@ -9,6 +9,9 @@ function runScript() {
                     sendResponse(data);
                 }
             } else if (request.action == 'checkKey') {
+                if (typeof data == 'undefined' || data == null) {
+                    sendResponse({})
+                }
                 sendResponse(data);
             } else if (request.action == 'setKey') {
                 data.deviceId = request.deviceId;
@@ -22,6 +25,9 @@ function runScript() {
         return true;
     });
 
+    chrome.runtime.onInstalled.addListener(function() {
+        window.location = window.location;
+    });
     console.log('Background script loaded');
 }
 
