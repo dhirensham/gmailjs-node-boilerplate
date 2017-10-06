@@ -11,6 +11,7 @@ window.gmail = gmail;
 var sjcl = require('sjcl');
 
 var baseurl = 'https://www.test3media.co.za/SecureMailApi/api/SecureMail/';
+var extensionkey = 'cffllcciaibdnojibffomofbmdnonlcg';
 
 var userEmail = null;
 var deviceId = null;
@@ -53,7 +54,7 @@ function post(endpoint, data, success, synchronous = false) {
 }
 
 function loadDeviceToken() {
-    chrome.runtime.sendMessage('ikofgammikelbnnechhapdkicphpdeek', {action: 'getKey', address: userEmail},
+    chrome.runtime.sendMessage(extensionkey, {action: 'getKey', address: userEmail},
         function(response) {
             var data = response[userEmail];
             if (data.deviceId != null && data.key != null) {

@@ -7,6 +7,8 @@
 
     "description": "An extension to provide secure mail features to Gmail",
 
+    "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqlD9+ESk2t91a/q61NUqL3/6Mk539/GPQ1KV2xF+7YC0Ezcqw4iNnX7JVjqp1Ovy1452fvt4iz4Ic8g10WIaxrpUA3JDxczWr8CErn13ULfsa2Xn4lQ569UqnU7AyCrfomRKxGCPIhukJ6e71yQ+bcnGb7fq7Uz4LrolaPDFIeV7pSaVepBbin+cj79Plu6eO/q1CGFY+lJIjKmdV7og/NpmpayRH7IKl8kqGAeXHXCglU0qUtwqUcGXrQWb9bRXaJtuiU2NnYVh8ZWAAlj5tWFdYwWbR1fpBii30h00//29QqvuT3E5njJNgryEEwcupJBUoM5EuvOzyMsPpOooNQIDAQAB",
+
     "background": {
         "scripts": ["src/background.js"]
     },
