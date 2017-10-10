@@ -17,10 +17,8 @@ var userEmail = null;
 var deviceId = null;
 var key = null;
 
+var routing = {};
 var sign_buttons = {};
-var keywords = null;
-var autocc = null;
-var signThreshold = 1000;
 var signRequired = false;
 
 var compose_sending = {};
@@ -75,9 +73,8 @@ function loadKeywords() {
     function(data, status, xhr) {
         console.log(data);
         if (data.Succeeded) {
-            keywords = data.PhraseScores;
-            signThreshold = data.SignThreshold;
-            autocc = data.AutoCCThresholds;
+            routing = data.MessageRouting;
+            window.routing = routing;
         } else {
             console.log(data);
             gmail.tools.infobox('H3 SecureMail error: ' + data.ErrorMessage);
@@ -106,27 +103,39 @@ function onSignAndSend(compose) {
 }
 
 function getNlpScore(body) {
-    var score = 0;
+    var lowerbody = body.toLowerCase();
 
-    for (var i = 0; i < keywords.length; i++) {
-        var kw = keywords[i];
-        for (var w = 0; w < kw.Words.length; w++) {
-            if (body.indexOf(kw.Words[w]) >= 0) {
-                score += kw.Score;
+    var count = {};
+
+    for (var i = 0; i < routing.length; i++) {
+        var route = routing[i];
+        count[route.Recipient] = 0;
+        for (var w = 0; w < route.Words.length; w++) {
+            if (lowerbody.indexOf(route.Words[w].toLowerCase()) >= 0) {
+                count[route.Recipient]++;
             }
         }
     }
 
-    return score;
+    var ccaddress = null;
+    var max = 0;
+    for (var v in count) {
+        if (count[v] > max) {
+            max = count[v];
+            ccaddress = v;
+        }
+    }
+
+    return ccaddress;
 }
 
 function onTimer(compose) {
     var body = compose.body();   
 
-    var score = getNlpScore(body);
-    if (score >= signThreshold) {
+    var ccaddress = getNlpScore(body);
+    if (ccaddress != null) {
         if (message_displayed[compose] != true) {
-            gmail.tools.infobox('H3 SecureMail: Message will be signed', 10000);
+            gmail.tools.infobox('H3 SecureMail: Message will be signed and routed to ' + ccaddress, 10000);
             message_displayed[compose] = true;
         }
         $('.T-I-atl').css('background-image', '-webkit-linear-gradient(top,#4def90,#47de87)');
@@ -214,20 +223,36 @@ function onSignCancelled() {
 gmail.observe.before('send_message', function(url, body, data, xhr) {
     var body_params = xhr.xhrParams.body_params;
     console.log(body_params);
-    console.log(body);
-    var score = getNlpScore(body_params.body);
+    var ccaddress = getNlpScore(body_params.body);
+    console.log('ccaddress is ', ccaddress);
 
-    if (score >= signThreshold || signRequired) {
+    if (ccaddress != null || signRequired) {
         console.log('signing required');
         signRequired = false;
 
-        for (var i = 0; i < autocc.length; i++) {
-            if (score >= autocc[i].Threshold) {
-                body_params.cc = body_params.cc.concat(autocc[i].RecipientAddress);
-                break;
+        if (ccaddress != null) {
+            console.log('cc address is ' + ccaddress);
+            if(body_params.cc) {
+                console.log(body_params.cc);
+                if(typeof body_params.cc != 'object') { 
+                    body_params.cc = [ body_params.cc ]; 
+                }
+            } else {
+                body_params.cc = [];
             }
+            console.log(body_params.cc);
+            body_params.cc.push(ccaddress);
+        } else {
+            console.log('cc addrfess is null');
         }
 
+        console.log('updating body');
+
+        body_params.body = body_params.body.replace('BEGIN H3 SECURE MAIL SIGNATURE', 'EMBEDDED H3 SECURE MAIL SIGNATURE');
+        body_params.body = body_params.body.replace('END H3 SECURE MAIL SIGNATURE', 'END EMBEDDED H3 SECURE MAIL SIGNATURE');
+
+        console.log('computing hash');
+        
         var hash = sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(body_params.body));
         
         post('GenerateSignatureToken',{Username: userEmail, 
@@ -371,6 +396,8 @@ function addAuditTrailButton(id) {
                 output.push(array[i].EmailAddress1);
             }
 
+            output = output.reverse();
+
             var content = '<div style="max-height:600px !important;overflow:auto;">';
             
             for (var a = 0; a < output.length; a++) {
@@ -438,7 +465,7 @@ function processReceivedEmail(source, messages, threadid, thread) {
                 gmail.tools.infobox('H3 SecureMail error: ' + data.ErrorMessage);
                 gmail.dom.email(messages.total_threads[threadid]).dom().addClass('h3smerror');
             }
-        });
+        }, true);
 }
 
 gmail.observe.on("open_email", function(id, url, body, xhr) {
